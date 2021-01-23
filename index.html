@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <title>TradeAlerts | Real time trade alerts for Uniswap</title>
+        <meta name="description" content="Real time trade alerts for Uniswap, SushiSwap, MooniSwap and Other Dex">
+        <meta charset="utf-8">
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+        <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.10.2/css/all.min.css">
+        <script type="text/javascript" src="https://cdn.jsdelivr.net/jquery/latest/jquery.min.js"></script>
+        <style>
+            body {
+                background-color: #edf2f6;
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            
+            * {
+                text-decoration: none;
+            }
+            
+            .trd-box {
+                padding: 20px;
+                background: #fff;
+                margin-bottom: 10px;
+                border-radius: 8px;
+                border: 1px solid #e6ecf5;
+            }
+            
+            .cont {
+                width: 50%;
+                margin: 0 auto;
+            }
+            
+            .trades {
+                margin-top: 40px;
+                height: 650px;
+                overflow-x: auto;
+            }
+            
+            .trades i {
+                vertical-align: super;
+                color: #778899;
+            }
+            
+            .tdtxt {
+                color: #333;
+                vertical-align: super;
+                border-left: 1px solid #e6ecf5;
+                padding: 4px 10px;
+                margin-left: 10px;
+                font-size: 13px;
+            }
+            
+            .dexicon {
+                width: 20px;
+                height: 20px;
+                vertical-align: bottom;
+                box-shadow: 1px 2px rgba(0,0,0,0.1);
+                border-radius: 50%;
+            }
+            
+            .dotBox {
+                margin-top: 10px;
+            }
+            
+            .fa-circle {
+                margin: 0 1px;
+                border-radius: 50%;
+                box-shadow: 1px 1px rgba(0,0,0,0.1);
+            }
+            
+            .t-logo {
+                width: 30px;
+                height: 30px;
+                box-shadow: 1px 2px rgba(0,0,0,0.1);
+                border-radius: 50%;
+            }
+            
+            .t-addr {
+                font-size: 10px;
+                margin-top: 3px;
+                color: #778899;
+            }
+            
+            .exLink {
+                color: #4169e1;
+                font-weight: bold;
+            }
+            
+            
+                        
+            .filterBox {
+                text-align: center;
+            }
+                        
+                        
+            * {
+              scrollbar-width: thin;
+              scrollbar-color: #333 transparent;
+            }
+            
+            /* Works on Chrome/Edge/Safari */
+            *::-webkit-scrollbar {
+                width: 8px;
+            }
+            *::-webkit-scrollbar-thumb {
+                background-color: #333;
+                border-radius: 4px;
+                border: 0;
+            }
+            
+            
+            .wait {
+                font-size: 20px;
+                text-align: center;
+            }
+            
+            
+            .tokenSelBoxIn td {
+                padding: 5px;
+            }
+            
+            
+            .tokenSelectedBoxIn td {
+                padding: 5px;
+            }
+            
+            .selToken .fa {
+                position: absolute;
+                margin-top: -5px;
+                margin-left: -5px;
+            }
+            
+            .selToken .fa:before {
+                content: "\f055";
+                position: absolute;
+                color: #4682b4;
+            }
+            
+            .selectedToken .fa {
+                position: absolute;
+                margin-top: -5px;
+                margin-left: -5px;
+            }
+            
+            .selectedToken .fa:before {
+                content: "\f057";
+                position: absolute;
+                color: #ff6347;
+            }
+            
+            .prc {
+                color: #4169e1;
+            }
+            
+            
+            @media (max-width: 950px) {
+                .cont {
+                    width: 95%;
+                }
+                .filterBox {
+                    width: 95%;
+                }
+                .form__field {
+                    width: 85%;
+                }
+                
+                .tokenSelBox {
+                    display: none;
+                }
+                
+                .tokenSelectedBox {
+                    display: none;
+                }
+            }
+        </style>
+    </head>
+    <body>
+        <div>
+            <div class="container">
+                <div class="tokenSelBox" style="position: fixed;width: 160px;top: 0;left: 0;background: #fff;padding: 0 25px;font-size: 12px;color: #333;border: 1px solid #e6ecf5;overflow-x: auto;height: 100%;">
+                    <div>
+                        <h3 style="color: #708090;">Filter By Tokens</h3>
+                        <input type="text" placeholder="Search token" class="search" style="padding: 5px;border: 1px solid #e1e8ed;margin-bottom: 20px;">
+                    </div>
+                    <table class="tokenSelBoxIn"></table>
+                </div>
+                <div class="tokenSelectedBox" style="position: fixed;width: 160px;top: 0;right: 0;background: #fff;padding: 0 25px;font-size: 12px;color: #333;border: 1px solid #e6ecf5;overflow-x: auto;height: 100%;">
+                    <div>
+                        <h3 style="color: #708090;">Filtered Tokens</h3>
+                        <div class="noFilter"><i class="fas fa-info-circle"></i> No Filter</div>
+                    </div>
+                    <table class="tokenSelectedBoxIn"></table>
+                </div>
+                <div class="cont">
+                    <div class="filterBox">
+                        <a href=""><h2 style="color: #778899;"><i class="fab fa-autoprefixer" style="background: #7b68ee;padding: 5px;border-radius: 11px;color: #fff;"></i> TradeAlerts</h2></a>
+                        <div>
+                            <input type="text" class="form__field filterAddr" style="display: none"/>
+                		</div>
+            		</div>
+                    <div class="trades">
+                        <div class="wait">Waiting for Real-time Trades <i class="fas fa-stroopwafel fa-spin" style="vertical-align: middle;"></i></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <script src="https://cdnjs.cloudflare.com/ajax/libs/bignumber.js/8.0.2/bignumber.min.js" integrity="sha512-7UzDjRNKHpQnkh1Wf1l6i/OPINS9P2DDzTwQNX79JxfbInCXGpgI1RPb3ZD+uTP3O5X7Ke4e0+cxt2TxV7n0qQ==" crossorigin="anonymous"></script>
+        <script type="text/javascript" src="https://unpkg.com/web3@1.2.11/dist/web3.min.js"></script>
+        <script type="text/javascript" src="script.js"></script>
+    </body>
+</html>
